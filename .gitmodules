@@ -2,8 +2,8 @@
 	path = plugins/catppuccin/tmux
 	url = https://github.com/catppuccin/tmux
 [submodule ".config/tmux/plugins/tmux-continuum"]
-	path = plugins/tmux-continuum/tmux-continuum
+	path = plugins/tmux-continuum
 	url = https://github.com/tmux-plugins/tmux-continuum
 [submodule ".config/tmux/plugins/tmux-resurrect"]
-	path = plugins/tmux-resurrect/tmux-resurrect
+	path = plugins/tmux-resurrect
 	url = https://github.com/tmux-plugins/tmux-resurrect
