@@ -17,7 +17,7 @@ The live config is at `~/.config/tmux/tmux.conf` — edits to either location af
 - **Pane navigation**: vim-tmux-navigator pattern using `Alt+h/j/k/l` with vim-aware `if-shell` detection — these same keys work in copy-mode-vi
 - **Indexing**: Windows and panes start at 1, with `renumber-windows on`
 - **Status bar**: Single line at top. Window pills on the left (`status-left ""`); green session pill `[#S]` + clock + date on the right, built from catppuccin's `@catppuccin_status_session` / `@catppuccin_status_date_time` module strings (referenced in `status-right` **after** the `run` line, since the modules don't exist until then)
-- **Command prompt**: `message-line 0` — a `:` prompt / message takes over the whole status line (full-width bar, text from the left). `message-style` / `message-command-style` are re-asserted **after** `run` with `align=left` because catppuccin sets them `align=centre`, which otherwise centers the prompt
+- **Command prompt**: `message-line 0` — a `:` prompt / message takes over the whole status line. `message-style` / `message-command-style` are re-asserted **after** `run`: `align=left` (catppuccin sets `align=centre`, which offsets the prompt) and `fill=<colour>` — without `fill`, tmux 3.7 only paints the prompt's own width and the window pills / session / clock stay visible behind it
 
 ## Plugins
 
