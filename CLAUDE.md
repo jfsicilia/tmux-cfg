@@ -16,7 +16,8 @@ The live config is at `~/.config/tmux/tmux.conf` — edits to either location af
 - **Window display**: Uses `#W` (window name) not `#T` (pane title) in catppuccin — `allow-rename off` and `automatic-rename off` prevent the shell from overriding manual window names
 - **Pane navigation**: vim-tmux-navigator pattern using `Alt+h/j/k/l` with vim-aware `if-shell` detection — these same keys work in copy-mode-vi
 - **Indexing**: Windows and panes start at 1, with `renumber-windows on`
-- **Status bar**: Positioned at top
+- **Status bar**: Single line at top. Window pills on the left (`status-left ""`); green session pill `[#S]` + clock + date on the right, built from catppuccin's `@catppuccin_status_session` / `@catppuccin_status_date_time` module strings (referenced in `status-right` **after** the `run` line, since the modules don't exist until then)
+- **Command prompt**: `message-line 0` — a `:` prompt / message takes over the whole status line (full-width bar, text from the left). `message-style` / `message-command-style` are re-asserted **after** `run` with `align=left` because catppuccin sets them `align=centre`, which otherwise centers the prompt
 
 ## Plugins
 
