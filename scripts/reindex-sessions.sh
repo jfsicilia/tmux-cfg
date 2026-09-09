@@ -12,3 +12,7 @@ tmux list-sessions -F '#{session_name}' | LC_ALL=C sort | while IFS= read -r s; 
 	n=$((n + 1))
 	tmux set-option -t "$s" @sess_idx "$n"
 done
+
+# Setting an option doesn't repaint the status line; without this the new
+# indices wouldn't show until the next status-interval tick (15s).
+tmux refresh-client -S
