@@ -3,7 +3,9 @@
     "allow": [
       "WebSearch",
       "Bash(git clone:*)",
-      "WebFetch(domain:codeberg.org)"
+      "WebFetch(domain:codeberg.org)",
+      "Bash(tmux source-file *)",
+      "Bash(tmux list-keys *)"
     ]
   }
 }
