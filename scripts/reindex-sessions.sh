@@ -15,4 +15,5 @@ done
 
 # Setting an option doesn't repaint the status line; without this the new
 # indices wouldn't show until the next status-interval tick (15s).
-tmux refresh-client -S
+# (Quiet when no client is attached — e.g. continuum's boot restore.)
+tmux refresh-client -S 2>/dev/null || true
