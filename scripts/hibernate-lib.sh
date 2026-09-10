@@ -74,6 +74,31 @@ _hib_drop_sidebar() {
 	return 0
 }
 
+# Suspend workmux's after-new-session / after-new-window hook slots so they
+# don't inject the sidebar into a window restore.sh is still building pane by
+# pane (which throws off `select-layout` and scrambles pane cwds). Remembers
+# each slot with its array index; pair with the restore below. This is a
+# different concern from the after-split-window sidebar de-dup in tmux.conf.
+_HIB_WM_HOOKS=""
+_hib_wm_hooks_suspend() {
+	_HIB_WM_HOOKS=""
+	local slot cmd
+	while read -r slot cmd; do
+		case "$slot" in after-new-session\[*|after-new-window\[*) ;; *) continue ;; esac
+		case "$cmd"  in *workmux*) ;; *) continue ;; esac
+		tmux set-hook -gu "$slot"
+		_HIB_WM_HOOKS+="${slot}"$'\t'"${cmd}"$'\n'
+	done < <(tmux show-hooks -g 2>/dev/null)
+}
+_hib_wm_hooks_restore() {
+	[ -n "$_HIB_WM_HOOKS" ] || return 0
+	local slot cmd
+	while IFS=$'\t' read -r slot cmd; do
+		[ -n "$slot" ] && tmux set-hook -g "$slot" "$cmd"
+	done <<<"$_HIB_WM_HOOKS"
+	_HIB_WM_HOOKS=""
+}
+
 # hib_list <dir> — stashed session names in <dir>, one per line, tmux sort order.
 hib_list() {
 	local f b
@@ -206,19 +231,12 @@ hib_unstash() {
 
 	# workmux's after-new-session / after-new-window hooks fire while restore.sh
 	# is still building the session and inject the sidebar into a half-built
-	# window, scrambling pane order and working dirs. Suspend just those
-	# (workmux-owned) hooks for the restore, then rebuild the sidebar once,
-	# cleanly, at the end.
-	local wm_ns wm_nw rc=0
-	wm_ns=$(tmux show-hooks -g 2>/dev/null | sed -n 's/^after-new-session\[[0-9]*\] //p' | head -1)
-	wm_nw=$(tmux show-hooks -g 2>/dev/null | sed -n 's/^after-new-window\[[0-9]*\] //p' | head -1)
-	case "$wm_ns" in *workmux*) tmux set-hook -gu after-new-session ;; *) wm_ns= ;; esac
-	case "$wm_nw" in *workmux*) tmux set-hook -gu after-new-window ;; *) wm_nw= ;; esac
-
+	# window, scrambling pane order and working dirs. Suspend those hook slots
+	# for the restore, then rebuild the sidebar once, cleanly, at the end.
+	local rc=0
+	_hib_wm_hooks_suspend
 	"$PERSIST_RESTORE" "$session" >/dev/null 2>&1 || rc=$?
-
-	[ -n "$wm_ns" ] && tmux set-hook -g after-new-session "$wm_ns"
-	[ -n "$wm_nw" ] && tmux set-hook -g after-new-window "$wm_nw"
+	_hib_wm_hooks_restore
 	[ "$rc" = 0 ] || _hib_die "restore failed: $session"
 
 	if command -v workmux >/dev/null 2>&1; then
