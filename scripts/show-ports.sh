@@ -1,11 +1,11 @@
 #!/bin/sh
-# Populates the window option @server_ports from a project's .server.ports file
+# Populates the window option @server_ports from a project's server.ports file
 # — one "name:port" pair per line, whitespace around name/:/port is ignored —
 # so the pill in status-right can show it next to the clock (only when
 # non-empty).
 #
 # Searched upward from the pane's cwd to $HOME, so a subdirectory of the
-# project still finds it, e.g. .server.ports:
+# project still finds it, e.g. server.ports:
 #   backend:8180
 #   frontend:8181
 #
@@ -20,10 +20,10 @@ get_server_ports() {
     window_id="$1"
     dir="$2"
     ports=""
-    # Try to find a .server.ports file in the current directory or any parent directory up to $HOME,
+    # Try to find a server.ports file in the current directory or any parent directory up to $HOME,
     # and read its contents into the ports variable, formatted as "name:port" pairs.
     while :; do
-        if [ -f "$dir/.server.ports" ]; then
+        if [ -f "$dir/server.ports" ]; then
             ports=$(awk -F: '
 				{
 					name = $1; port = $2
@@ -31,7 +31,7 @@ get_server_ports() {
 					gsub(/[[:space:]]/, "", port)
 					if (name != "" && port != "") printf "%s:%s ", name, port
 				}
-			' "$dir/.server.ports" | sed 's/ $//')
+			' "$dir/server.ports" | sed 's/ $//')
             break
         fi
         if [ "$dir" = "$HOME" ] || [ "$dir" = "/" ]; then
